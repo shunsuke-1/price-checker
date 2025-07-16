@@ -7,7 +7,7 @@ import re
 from fastapi import HTTPException
 import os
 from dotenv import load_dotenv
-from fastapi.middleware import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
