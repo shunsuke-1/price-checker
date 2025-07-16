@@ -7,6 +7,7 @@ import re
 from fastapi import HTTPException
 import os
 from dotenv import load_dotenv
+from fastapi.middleware import CORSMiddleware
 
 load_dotenv()
 
@@ -20,6 +21,15 @@ DATABASE_URL = os.getenv("POSTGRES_URL")
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # セキュリティ強化のため本番ではドメイン指定推奨
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # PostgreSQL 接続（環境変数または設定ファイルで管理するのが望ましい）
 conn = psycopg2.connect(DATABASE_URL)
