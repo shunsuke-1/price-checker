@@ -42,9 +42,9 @@ app.add_middleware(
 
 # 認証トークンの生成
 credentials = TokenCredentials(
-    auth_key_path=AUTH_KEY_PATH,
-    key_id=KEY_ID,
-    team_id=TEAM_ID
+    TEAM_ID,
+    KEY_ID,
+    AUTH_KEY_PATH
 )
 
 # APNsクライアントの準備（開発用：use_sandbox=True）
