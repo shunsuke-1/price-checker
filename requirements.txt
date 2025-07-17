@@ -4,3 +4,4 @@ psycopg2==2.9.10
 pydantic
 python-dotenv
 uvicorn==0.35.0
+apns2

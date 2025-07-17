@@ -8,6 +8,10 @@ from fastapi import HTTPException
 import os
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+from apns2.client import APNsClient
+from apns2.payload import Payload
+from apns2.credentials import TokenCredentials
+
 
 load_dotenv()
 
@@ -19,17 +23,44 @@ TAG = os.getenv("AMAZON_TAG")
 COUNTRY = os.getenv("AMAZON_COUNTRY")
 DATABASE_URL = os.getenv("POSTGRES_URL")
 
+# push通知用認証情報
+TEAM_ID = os.getenv("TEAM_ID")
+KEY_ID = os.getenv("KEY_ID")
+BUNDLE_ID = os.getenv("BUNDLE_ID")
+AUTH_KEY_PATH = os.getenv("AUTH_KEY_PATH")
+
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # セキュリティ強化のため本番ではドメイン指定推奨
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# 認証トークンの生成
+credentials = TokenCredentials(
+    auth_key_path=AUTH_KEY_PATH,
+    key_id=KEY_ID,
+    team_id=TEAM_ID
+)
+
+# APNsクライアントの準備（開発用：use_sandbox=True）
+client = APNsClient(
+    credentials,
+    use_sandbox=True,
+    use_alternative_port=False
+)
+
+
+
+
+# リクエストボディの型定義
+class NotificationRequest(BaseModel):
+    token: str
+    message: str
 
 # PostgreSQL 接続（環境変数または設定ファイルで管理するのが望ましい）
 conn = psycopg2.connect(DATABASE_URL)
@@ -60,6 +91,16 @@ class BulkRegisterRequest(BaseModel):
 
 class CheckPriceRequest(BaseModel):
     user_id: str
+
+# 通知送信エンドポイント
+@app.post("/notify")
+async def send_notification(data: NotificationRequest):
+    try:
+        payload = Payload(alert=data.message, sound="default", badge=1)
+        client.send_notification(data.token, payload, topic=BUNDLE_ID)
+        return {"status": "✅ 通知を送信しました"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"❌ 通知送信失敗: {str(e)}")
 
 # ASIN 抽出関数
 def extract_asin(url: str) -> str | None:
