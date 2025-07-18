@@ -37,8 +37,8 @@ if os.getenv("RENDER") and os.getenv("KEY_P8"):
     with open("AuthKey_J8KCXKK48A.p8", "w") as f:
         f.write(os.getenv("KEY_P8").replace("\\n", "\n"))
     
-    with open("AuthKey_J8KCXKK48A.p8", "r") as f:
-        print(f.read())  # 実際の内容を確認（複数行になっていればOK）
+    # with open("AuthKey_J8KCXKK48A.p8", "r") as f:
+    #     print(f.read())  # 実際の内容を確認（複数行になっていればOK）
 
 app = FastAPI()
 
@@ -60,15 +60,15 @@ credentials = TokenCredentials(
 # APNsクライアントの準備（開発用：use_sandbox=True）
 client = APNsClient(
     credentials,
-    use_sandbox=True,
+    use_sandbox=False,
     use_alternative_port=False
 )
 
-print("✅ TOKEN CREDENTIALS OK")
-print(f"AUTH_KEY_PATH: {AUTH_KEY_PATH}")
-print(f"TEAM_ID: {TEAM_ID}")
-print(f"KEY_ID: {KEY_ID}")
-print(f"BUNDLE_ID: {BUNDLE_ID}")
+# print("✅ TOKEN CREDENTIALS OK")
+# print(f"AUTH_KEY_PATH: {AUTH_KEY_PATH}")
+# print(f"TEAM_ID: {TEAM_ID}")
+# print(f"KEY_ID: {KEY_ID}")
+# print(f"BUNDLE_ID: {BUNDLE_ID}")
 
 
 
