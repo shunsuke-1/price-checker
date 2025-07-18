@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from apns2.client import APNsClient
 from apns2.payload import Payload
 from apns2.credentials import TokenCredentials
+from typing import Union
 
 
 load_dotenv()
@@ -108,7 +109,7 @@ async def send_notification(data: NotificationRequest):
         raise HTTPException(status_code=500, detail=f"❌ 通知送信失敗: {str(e)}")
 
 # ASIN 抽出関数
-def extract_asin(url: str) -> str | None:
+def extract_asin(url: str) -> Union[str, None]:
     match = re.search(r"/(?:dp|gp/product)/([A-Z0-9]{10})", url)
     return match.group(1) if match else None
 
