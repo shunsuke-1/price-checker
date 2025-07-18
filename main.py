@@ -272,6 +272,7 @@ import httpx
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Union
+import traceback
 
 load_dotenv()
 
@@ -360,11 +361,18 @@ async def send_notification(data: NotificationRequest):
 
         async with httpx.AsyncClient(http2=True) as client:
             res = await client.post(f"https://api.sandbox.push.apple.com/3/device/{data.token}", json=payload, headers=headers)
+
+            print(f"🔁 Status Code: {res.status_code}")
+            print(f"📨 Response: {res.text}")
+            print(f"📨 Headers: {res.headers}")
+
             if res.status_code == 200:
                 return {"status": "✅ 通知送信成功"}
             raise HTTPException(status_code=500, detail=f"APNs Error: {res.text}")
 
     except Exception as e:
+        print("通知送信エラー:", e)
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"❌ 通知送信失敗: {str(e)}")
 
 def extract_asin(url: str) -> Union[str, None]:
