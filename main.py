@@ -112,6 +112,10 @@ class CheckPriceRequest(BaseModel):
 async def send_notification(data: NotificationRequest):
     try:
         payload = Payload(alert=data.message, sound="default", badge=1)
+
+        print(f"📤 Sending to token: {data.token}")
+        print(f"📦 Using topic (bundle_id): {BUNDLE_ID}")
+
         client.send_notification(data.token, payload, topic=BUNDLE_ID)
         return {"status": "✅ 通知を送信しました"}
     except Exception as e:
