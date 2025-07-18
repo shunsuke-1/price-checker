@@ -34,7 +34,7 @@ AUTH_KEY_PATH = os.getenv("AUTH_KEY_PATH")
 
 # Render上で、かつ KEY_P8 が存在する場合のみファイル生成
 if os.getenv("RENDER") and os.getenv("KEY_P8"):
-    with open("AuthKey_J8KCXKK48A.p8", "w") as f:
+    with open("AuthKey_Q7F6VRBP8F.p8", "w") as f:
         f.write(os.getenv("KEY_P8").replace("\\n", "\n"))
     
     # with open("AuthKey_J8KCXKK48A.p8", "r") as f:
