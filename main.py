@@ -36,6 +36,7 @@ AUTH_KEY_PATH = os.getenv("AUTH_KEY_PATH")
 if os.getenv("RENDER") and os.getenv("KEY_P8"):
     with open("AuthKey_J8KCXKK48A.p8", "w") as f:
         f.write(os.getenv("KEY_P8").replace("\\n", "\n"))
+        print(repr(os.getenv("KEY_P8").replace("\\n", "\n")))
 
 app = FastAPI()
 
