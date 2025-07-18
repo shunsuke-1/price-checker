@@ -30,6 +30,11 @@ BUNDLE_ID = os.getenv("BUNDLE_ID")
 AUTH_KEY_PATH = os.getenv("AUTH_KEY_PATH")
 
 
+# Render上ではファイルがないので動的に作成する
+if os.getenv("RENDER"):
+    with open("AuthKey_J8KCXKK48A.p8", "w") as f:
+        f.write(os.getenv("KEY_P8").replace("\\n", "\n"))
+
 app = FastAPI()
 
 app.add_middleware(
