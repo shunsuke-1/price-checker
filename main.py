@@ -64,6 +64,11 @@ client = APNsClient(
     use_alternative_port=False
 )
 
+print("✅ TOKEN CREDENTIALS OK")
+print(f"AUTH_KEY_PATH: {AUTH_KEY_PATH}")
+print(f"TEAM_ID: {TEAM_ID}")
+print(f"KEY_ID: {KEY_ID}")
+print(f"BUNDLE_ID: {BUNDLE_ID}")
 
 
 
