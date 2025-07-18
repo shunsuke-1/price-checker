@@ -1,17 +1,14 @@
-# amazon-paapi5==1.1.2
-# fastapi==0.116.1
-# psycopg2==2.9.10
-# pydantic
-# python-dotenv
-# uvicorn==0.35.0
-# apns2
-# pyjwt
-# requests
-
+amazon-paapi5==1.1.2
+pydantic
+requests
 httpx
 pyjwt
 python-dotenv
 psycopg2-binary
 fastapi
 uvicorn
-amazon-paapi
+
+# fastapi==0.116.1
+# psycopg2==2.9.10
+# uvicorn==0.35.0
+# apns2
