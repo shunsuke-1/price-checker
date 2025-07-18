@@ -12,6 +12,7 @@ from apns2.client import APNsClient
 from apns2.payload import Payload
 from apns2.credentials import TokenCredentials
 from typing import Union
+import traceback
 
 
 load_dotenv()
@@ -106,6 +107,8 @@ async def send_notification(data: NotificationRequest):
         client.send_notification(data.token, payload, topic=BUNDLE_ID)
         return {"status": "✅ 通知を送信しました"}
     except Exception as e:
+        print("通知送信エラー:", e)
+        traceback.print_exc()  # ← 詳細なトレースを出力
         raise HTTPException(status_code=500, detail=f"❌ 通知送信失敗: {str(e)}")
 
 # ASIN 抽出関数
