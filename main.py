@@ -60,7 +60,7 @@ credentials = TokenCredentials(
 # APNsクライアントの準備（開発用：use_sandbox=True）
 client = APNsClient(
     credentials,
-    use_sandbox=False,
+    use_sandbox=True,
     use_alternative_port=False
 )
 
