@@ -13,6 +13,9 @@ from apns2.payload import Payload
 from apns2.credentials import TokenCredentials
 from typing import Union
 import traceback
+import time
+import jwt
+import requests
 
 
 load_dotenv()
@@ -64,13 +67,6 @@ client = APNsClient(
     use_alternative_port=False
 )
 
-# print("✅ TOKEN CREDENTIALS OK")
-# print(f"AUTH_KEY_PATH: {AUTH_KEY_PATH}")
-# print(f"TEAM_ID: {TEAM_ID}")
-# print(f"KEY_ID: {KEY_ID}")
-# print(f"BUNDLE_ID: {BUNDLE_ID}")
-
-
 
 # リクエストボディの型定義
 class NotificationRequest(BaseModel):
@@ -111,16 +107,50 @@ class CheckPriceRequest(BaseModel):
 @app.post("/notify")
 async def send_notification(data: NotificationRequest):
     try:
-        payload = Payload(alert=data.message, sound="default", badge=1)
+        # 🔐 JWTトークン生成
+        with open(AUTH_KEY_PATH) as f:
+            secret = f.read()
 
-        print(f"📤 Sending to token: {data.token}")
-        print(f"📦 Using topic (bundle_id): {BUNDLE_ID}")
+        now = int(time.time())
+        token = jwt.encode(
+            {
+                "iss": TEAM_ID,
+                "iat": now
+            },
+            secret,
+            algorithm="ES256",
+            headers={"alg": "ES256", "kid": KEY_ID}
+        )
 
-        client.send_notification(data.token, payload, topic=BUNDLE_ID)
-        return {"status": "✅ 通知を送信しました"}
+        # 📦 通知Payload
+        payload = {
+            "aps": {
+                "alert": data.message,
+                "sound": "default",
+                "badge": 1
+            }
+        }
+
+        # APNs エンドポイント（開発環境用）
+        url = f"https://api.sandbox.push.apple.com/3/device/{data.token}"
+
+        headers = {
+            "authorization": f"bearer {token}",
+            "apns-topic": BUNDLE_ID,
+            "apns-push-type": "alert"
+        }
+
+        # 通知送信
+        res = requests.post(url, json=payload, headers=headers)
+
+        if res.status_code == 200:
+            return {"status": "✅ 通知送信成功"}
+        else:
+            print("❌ 通知失敗:", res.text)
+            raise HTTPException(status_code=500, detail=f"APNs Error: {res.text}")
+
     except Exception as e:
         print("通知送信エラー:", e)
-        traceback.print_exc()  # ← 詳細なトレースを出力
         raise HTTPException(status_code=500, detail=f"❌ 通知送信失敗: {str(e)}")
 
 # ASIN 抽出関数
