@@ -87,6 +87,49 @@ CREATE TABLE IF NOT EXISTS device_tokens (
 ''')
 conn.commit()
 
+@app.post("/run_check")
+async def run_check():
+    await check_and_notify()
+    return {"message": "価格チェック完了"}
+
+
+async def check_and_notify():
+    cursor.execute("""
+        SELECT user_id, asin, title, target_price, url FROM products
+    """)
+    rows = cursor.fetchall()
+
+    if not rows:
+        return
+
+    asin_set = {r[1] for r in rows}
+    amazon = AmazonAPI(KEY, SECRET, TAG, COUNTRY)
+    products = amazon.get_items(item_id_type="ASIN", item_ids=list(asin_set))
+
+    user_notifications = {}
+
+    for row in rows:
+        user_id, asin, title, target_price, url = row
+        try:
+            item = products["data"][asin]
+            current_price = item.offers.listings[0].price.amount
+            if current_price <= target_price:
+                if user_id not in user_notifications:
+                    user_notifications[user_id] = []
+                user_notifications[user_id].append(f"🛒 {title} が買い時です！（{int(current_price)}円）")
+        except Exception as e:
+            print(f"価格取得失敗: {asin}, エラー: {e}")
+
+    for user_id, messages in user_notifications.items():
+        cursor.execute("SELECT token FROM device_tokens WHERE user_id = %s", (user_id,))
+        row = cursor.fetchone()
+        if row:
+            token = row[0]
+            message = "\n".join(messages)
+            await send_notification(NotificationRequest(token=token, message=message))
+
+
+
 @app.post("/register_token")
 def register_token(req: DeviceTokenRequest):
     cursor.execute("INSERT INTO device_tokens (user_id, token) VALUES (%s, %s) ON CONFLICT (user_id) DO UPDATE SET token = EXCLUDED.token", (req.user_id, req.token))
