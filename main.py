@@ -197,7 +197,7 @@ async def send_notification(data: NotificationRequest):
         }
 
         async with httpx.AsyncClient(http2=True) as client:
-            res = await client.post(f"https://api.sandbox.push.apple.com/3/device/{data.token}", json=payload, headers=headers)
+            res = await client.post(f"https://api.push.apple.com/3/device/{data.token}", json=payload, headers=headers)
 
             print(f"🔁 Status Code: {res.status_code}")
             print(f"📨 Response: {res.text}")
