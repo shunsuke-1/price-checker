@@ -1,7 +1,7 @@
 amazon-paapi5==1.1.2
 pydantic
 requests
-httpx
+httpx[http2]
 PyJWT[crypto]
 python-dotenv
 psycopg2-binary
