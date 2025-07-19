@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Form, HTTPException
+from fastapi import FastAPI, Form, HTTPException, Depends
 from pydantic import BaseModel
 from amazon.paapi import AmazonAPI
 import psycopg2
@@ -96,14 +96,14 @@ def register_token(req: DeviceTokenRequest):
 
 # ユーザーIDから取得したトークンを使って通知
 @app.post("/notify_user")
-def notify_user(user_id: str, message: str):
+async def notify_user(user_id: str, message: str):
     cursor.execute("SELECT token FROM device_tokens WHERE user_id = %s", (user_id,))
     row = cursor.fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="トークンが登録されていません")
+    
     token = row[0]
-
-    return send_notification(NotificationRequest(token=token, message=message))
+    return await send_notification(NotificationRequest(token=token, message=message))
 
 
 @app.post("/notify")
