@@ -1,0 +1,14 @@
+# .github/workflows/price_check.yml
+name: Check Prices
+
+on:
+  schedule:
+    - cron: "*/5 * * * *" # 5分おきに実行（UTC）
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call /run_check_all endpoint
+        run: |
+          curl -X POST https://price-checker-nepp.onrender.com/run_check_all
