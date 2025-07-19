@@ -90,7 +90,7 @@ conn.commit()
 # 全ユーザーの登録商品価格チェック
 # renderで定期実行
 @app.post("/run_check_all")
-def run_check_all():
+async def run_check_all():
     cursor.execute("SELECT DISTINCT user_id FROM device_tokens")
     users = cursor.fetchall()
 
@@ -103,7 +103,7 @@ def run_check_all():
             token = cursor.fetchone()[0]
             message = f"{len(notifications)}件の商品が買い時です！"
             # send_notification関数を使って通知
-            send_notification(NotificationRequest(token=token, message=message))
+            await send_notification(NotificationRequest(token=token, message=message))
             results.append({"user_id": user_id, "notified": True})
 
     return {"results": results}
