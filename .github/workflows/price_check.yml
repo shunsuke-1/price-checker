@@ -3,7 +3,8 @@ name: Check Prices
 
 on:
   schedule:
-    - cron: "0 */2 * * *" # 5分おきに実行（UTC）
+    - cron: "*/5 * * * *"
+    # - cron: "0 */2 * * *" # 5分おきに実行（UTC）
 
 jobs:
   check:
