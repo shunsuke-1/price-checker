@@ -271,6 +271,11 @@ def delete_product(user_id: str, asin: str):
     conn.commit()
     return {"message": f"ASIN {asin} を削除しました"}
 
+@app.get("/debug_tokens")
+def debug_tokens():
+    cursor.execute("SELECT user_id, token FROM device_tokens")
+    return {"tokens": cursor.fetchall()}
+
 @app.post("/check_prices")
 def check_prices(req: CheckPriceRequest):
     cursor.execute("SELECT asin, title, target_price, url FROM products WHERE user_id = %s", (req.user_id,))
