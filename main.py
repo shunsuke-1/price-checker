@@ -170,6 +170,8 @@ async def notify_user(user_id: str, message: str):
         raise HTTPException(status_code=404, detail="トークンが登録されていません")
     
     token = row[0]
+    print("--debug token--")
+    print(token)
     return await send_notification(NotificationRequest(token=token, message=message))
 
 
