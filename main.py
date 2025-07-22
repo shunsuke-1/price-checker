@@ -278,6 +278,12 @@ def debug_tokens():
     cursor.execute("SELECT user_id, token FROM device_tokens")
     return {"tokens": cursor.fetchall()}
 
+@app.get("/debug_users")
+def debug_users():
+    cursor.execute("SELECT DISTINCT user_id FROM products")
+    return {"user_ids": [r[0] for r in cursor.fetchall()]}
+
+
 @app.post("/check_prices")
 def check_prices(req: CheckPriceRequest):
     cursor.execute("SELECT asin, title, target_price, url FROM products WHERE user_id = %s", (req.user_id,))
